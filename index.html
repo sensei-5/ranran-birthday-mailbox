@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="meadow">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>苒苒的生日信箱</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath fill='%235aab55' d='M20 36C20 24 14 14 4 10c12 0 18 8 16 26zm0 0c0-14 6-24 16-28C28 14 22 22 20 36z'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&display=swap">
+  <link rel="stylesheet" href="style.css?v=8">
+  <!-- 先套用上次選的風格，避免一打開先閃一下草木再淡到冰雪 -->
+  <script>try { if (localStorage.getItem('theme') === 'ice') document.documentElement.dataset.theme = 'ice'; } catch (e) {}</script>
+</head>
+<body>
+  <!-- 背景：兩套風格各畫一張靜態背景（scenery.js），用 data-theme 交叉淡化；上面再疊動態粒子 -->
+  <div class="world" aria-hidden="true">
+    <canvas class="bg bg-meadow" id="bgMeadow"></canvas>
+    <canvas class="bg bg-ice" id="bgIce"></canvas>
+    <div class="sunrays"></div>
+    <canvas class="particles" id="particles"></canvas>
+  </div>
+
+  <!-- 右上角：風格切換、音量、音樂開關 -->
+  <div class="controls" id="controls">
+    <div class="theme-switch" role="group" aria-label="風格">
+      <button type="button" class="theme-btn" data-theme-value="meadow" aria-pressed="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="leaf" d="M5 19C4 11 9 4.5 20 4c.5 10.5-6 16-14 15.2z"/><path class="vein" d="M5 19c3-5 7-9 11-11.5"/></svg><span>草木</span>
+      </button>
+      <button type="button" class="theme-btn" data-theme-value="ice" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="flake" d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M9.5 3.8L12 6l2.5-2.2M9.5 20.2L12 18l2.5 2.2M4 10.3l3.2.7-1 3.2M20 13.7l-3.2-.7 1-3.2M4 13.7l3.2-.7-1-3.2M20 10.3l-3.2.7 1 3.2"/></svg><span>冰雪姬</span>
+      </button>
+    </div>
+    <div class="music-ctrl" id="musicCtrl">
+      <button class="volume-btn" id="volumeBtn" type="button" aria-label="調整音量" aria-expanded="false" aria-controls="volumePop">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="spk" d="M4 9h4l5-4v14l-5-4H4z"/><path class="wave" d="M16 9.2a4 4 0 0 1 0 5.6M18.6 6.6a7.6 7.6 0 0 1 0 10.8"/></svg>
+      </button>
+      <button class="music-toggle" id="musicToggle" type="button" aria-pressed="true" aria-label="背景音樂：開">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="note" d="M9 18.5a2.5 2.5 0 1 1-2.5-2.5c.9 0 1.7.3 2.5.8V5l11-2v12.5a2.5 2.5 0 1 1-2.5-2.5c.9 0 1.7.3 2.5.8V7.2L9 9.2z"/><path class="slash" d="M3 3l18 18"/></svg>
+        <span>音樂</span>
+      </button>
+      <div class="volume-pop" id="volumePop" hidden>
+        <input type="range" id="volumeSlider" min="0" max="100" step="1" aria-label="背景音樂音量">
+        <span class="volume-num" id="volumeNum" aria-hidden="true"></span>
+      </div>
+    </div>
+  </div>
+
+  <main class="stage" id="stage">
+    <!-- 前景的草 / 積雪：在信箱前面、卡片後面 -->
+    <canvas class="front" id="front" aria-hidden="true"></canvas>
+
+    <!-- 首頁：祝福文字 + 信箱 -->
+    <header class="greet" id="greet">
+      <h1 class="greet-title" id="greetTitle">苒苒 生日快樂</h1>
+      <p class="greet-hint" id="hint">先把問卷從投信口放進信箱</p>
+    </header>
+
+    <div class="mailbox" id="mailbox" data-state="empty">
+      <div class="mb-body">
+        <span class="mb-slot"></span>
+        <button class="mb-import" id="importBtn" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 14v4.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V14"/></svg>
+          <span id="importLabel">導入問卷</span>
+        </button>
+        <div class="mb-door-frame" id="doorFrame">
+          <div class="mb-inside"><span class="mb-stack"></span><span class="mb-stack"></span><span class="mb-stack"></span></div>
+          <button class="mb-door" id="door" type="button" aria-label="打開信箱">
+            <span class="mb-plate">苒苒的信箱</span>
+            <span class="mb-knob"></span>
+          </button>
+        </div>
+        <span class="mb-flag"><span class="mb-flag-pole"></span><span class="mb-flag-cloth"></span></span>
+      </div>
+      <span class="mb-post"></span>
+      <!-- 裝飾：草木風格的藤蔓、冰雪風格的積雪與冰柱 -->
+      <svg class="mb-deco" viewBox="0 0 220 370" aria-hidden="true">
+        <g class="mb-vine" id="mbVine">
+          <path class="vine-stem" id="vinePath" pathLength="1" d="M128 368 C 136 346, 118 330, 128 306 C 138 284, 116 274, 120 258 C 60 262, 8 248, 4 214 C 0 170, 14 132, 2 96 C 12 40, 60 6, 110 2 C 150 0, 176 14, 192 30"/>
+          <g id="vineLeaves"></g>
+        </g>
+        <g class="mb-snow">
+          <path class="snow-cap" d="M-6 98 A 116 98 0 0 1 226 98 Q 222 110 214 104 Q 206 118 198 102 A 88 82 0 0 0 22 102 Q 14 120 8 104 Q 0 112 -6 98 Z"/>
+          <path class="icicle" d="M24 104 l4 18 l4 -17 Z M38 92 l3 12 l3 -13 Z M176 92 l3 13 l3 -12 Z M188 104 l4 20 l4 -19 Z"/>
+        </g>
+        <!-- 柱腳：接地的陰影，加上草叢（草木）或積雪堆（冰雪），讓信箱看起來是插在地上 -->
+        <defs>
+          <!-- 柱腳的草叢、雪堆底部漸漸淡掉，融進地面 -->
+          <linearGradient id="groundFade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#fff"/><stop offset="0.84" stop-color="#fff"/><stop offset="1" stop-color="#000"/>
+          </linearGradient>
+          <mask id="groundMask" maskUnits="userSpaceOnUse" x="0" y="300" width="230" height="76">
+            <rect x="0" y="300" width="230" height="76" fill="url(#groundFade)"/>
+          </mask>
+        </defs>
+        <ellipse class="ground-shadow" cx="112" cy="364" rx="70" ry="8"/>
+        <g class="mb-ground-grass" mask="url(#groundMask)">
+          <ellipse class="ground-mound" cx="112" cy="368" rx="54" ry="12"/>
+          <g id="groundBlades"></g>
+        </g>
+        <g class="mb-ground-snow" mask="url(#groundMask)">
+          <path class="ground-drift" d="M30 376 C 40 362, 56 356, 74 355 C 86 346, 102 344, 114 347 C 128 341, 146 344, 156 352 C 172 354, 188 364, 196 376 Z"/>
+          <path class="ground-drift-shade" d="M122 362 C 142 356, 168 360, 184 370 L 190 376 L 112 376 C 110 370, 114 365, 122 362 Z"/>
+        </g>
+      </svg>
+    </div>
+
+    <input type="file" id="fileInput" accept=".csv,text/csv" hidden>
+
+    <!-- 問卷卡片 -->
+    <section class="viewer" id="viewer" hidden aria-label="問卷">
+      <div class="card-slot" id="cardSlot" aria-live="polite"></div>
+      <nav class="card-nav" id="cardNav">
+        <button class="nav-btn" id="prevBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H6M11 6l-6 6 6 6"/></svg><span>前一張</span></button>
+        <span class="counter" id="counter"></span>
+        <button class="nav-btn" id="nextBtn" type="button"><span>下一張</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button>
+      </nav>
+    </section>
+  </main>
+
+  <div class="drop-hint" id="dropHint" hidden><p>放開，把問卷投進信箱</p></div>
+
+  <audio id="bgm" loop preload="auto"></audio>
+
+  <script src="scenery.js?v=18"></script>
+  <script src="main.js?v=16"></script>
+</body>
+</html>
