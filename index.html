@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&display=swap">
-  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="stylesheet" href="style.css?v=9">
   <!-- 先套用上次選的風格，避免一打開先閃一下草木再淡到冰雪 -->
   <script>try { if (localStorage.getItem('theme') === 'ice') document.documentElement.dataset.theme = 'ice'; } catch (e) {}</script>
 </head>
@@ -21,7 +21,7 @@
     <canvas class="particles" id="particles"></canvas>
   </div>
 
-  <!-- 右上角：風格切換、音量、音樂開關 -->
+  <!-- 右上角：風格切換 -->
   <div class="controls" id="controls">
     <div class="theme-switch" role="group" aria-label="風格">
       <button type="button" class="theme-btn" data-theme-value="meadow" aria-pressed="true">
@@ -30,19 +30,6 @@
       <button type="button" class="theme-btn" data-theme-value="ice" aria-pressed="false">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path class="flake" d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M9.5 3.8L12 6l2.5-2.2M9.5 20.2L12 18l2.5 2.2M4 10.3l3.2.7-1 3.2M20 13.7l-3.2-.7 1-3.2M4 13.7l3.2-.7-1-3.2M20 10.3l-3.2.7 1 3.2"/></svg><span>冰雪姬</span>
       </button>
-    </div>
-    <div class="music-ctrl" id="musicCtrl">
-      <button class="volume-btn" id="volumeBtn" type="button" aria-label="調整音量" aria-expanded="false" aria-controls="volumePop">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="spk" d="M4 9h4l5-4v14l-5-4H4z"/><path class="wave" d="M16 9.2a4 4 0 0 1 0 5.6M18.6 6.6a7.6 7.6 0 0 1 0 10.8"/></svg>
-      </button>
-      <button class="music-toggle" id="musicToggle" type="button" aria-pressed="true" aria-label="背景音樂：開">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="note" d="M9 18.5a2.5 2.5 0 1 1-2.5-2.5c.9 0 1.7.3 2.5.8V5l11-2v12.5a2.5 2.5 0 1 1-2.5-2.5c.9 0 1.7.3 2.5.8V7.2L9 9.2z"/><path class="slash" d="M3 3l18 18"/></svg>
-        <span>音樂</span>
-      </button>
-      <div class="volume-pop" id="volumePop" hidden>
-        <input type="range" id="volumeSlider" min="0" max="100" step="1" aria-label="背景音樂音量">
-        <span class="volume-num" id="volumeNum" aria-hidden="true"></span>
-      </div>
     </div>
   </div>
 
@@ -120,9 +107,7 @@
 
   <div class="drop-hint" id="dropHint" hidden><p>放開，把問卷投進信箱</p></div>
 
-  <audio id="bgm" loop preload="auto"></audio>
-
   <script src="scenery.js?v=18"></script>
-  <script src="main.js?v=16"></script>
+  <script src="main.js?v=17"></script>
 </body>
 </html>

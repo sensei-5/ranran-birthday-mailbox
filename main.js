@@ -1,15 +1,7 @@
 /* ==========================================================
-   CONFIG — 換音樂時只要改這裡
+   CONFIG
    ========================================================== */
 const CONFIG = {
-  // 兩個風格各一首背景音樂；檔案還沒放進 assets/ 時不會出錯，只是沒有聲音
-  bgm: {
-    meadow: 'assets/bgm-meadow.mp3',
-    ice: 'assets/bgm-ice.mp3',
-  },
-  bgmVolume: 0.3,      // 預設音量（0–1）；用音量拉桿調過後會記在瀏覽器
-  bgmFadeInMs: 1800,
-  bgmFadeOutMs: 700,
   navLockMs: 520,      // 翻卡防連點
 
   // 背景粒子（數字越大越熱鬧）
@@ -36,7 +28,6 @@ const state = {
   index: 0,         // letters.length 代表結尾卡片
   card: null,       // 目前顯示的卡片元素
   busy: false,
-  musicOn: true,
 };
 
 const $ = (id) => document.getElementById(id);
@@ -57,13 +48,6 @@ const els = {
   next: $('nextBtn'),
   counter: $('counter'),
   dropHint: $('dropHint'),
-  musicCtrl: $('musicCtrl'),
-  musicToggle: $('musicToggle'),
-  volumeBtn: $('volumeBtn'),
-  volumePop: $('volumePop'),
-  volumeSlider: $('volumeSlider'),
-  volumeNum: $('volumeNum'),
-  bgm: $('bgm'),
   themeBtns: [...document.querySelectorAll('.theme-btn')],
   canvas: $('particles'),
   bgMeadow: $('bgMeadow'),
@@ -500,10 +484,7 @@ function setTheme(theme, { initial = false } = {}) {
   if (endTitle) fillEndTitle(endTitle);
   try { localStorage.setItem('theme', theme); } catch (e) { /* 存不了就算了 */ }
   if (theme === 'meadow' && (changed || initial)) growVine();
-  if (changed && !initial) {
-    gust(theme);
-    switchTrack();
-  }
+  if (changed && !initial) gust(theme);
 }
 els.themeBtns.forEach((b) => b.addEventListener('click', () => setTheme(b.dataset.themeValue)));
 
@@ -513,119 +494,6 @@ function growVine() {
   box.classList.remove('is-growing');
   void box.offsetWidth; // 重新觸發動畫
   box.classList.add('is-growing');
-}
-
-/* ==========================================================
-   背景音樂：用 audio.volume 做淡入淡出，切換風格時換曲
-   ========================================================== */
-// iOS Safari 的 volume 是唯讀（永遠 1）：淡入淡出做不到，改成直接播放 / 暫停
-const canSetVolume = (() => { const a = new Audio(); a.volume = 0.5; return a.volume === 0.5; })();
-
-let bgmVolume = CONFIG.bgmVolume;
-try {
-  const saved = parseFloat(localStorage.getItem('bgmVolume'));
-  if (saved >= 0 && saved <= 1) bgmVolume = saved;
-} catch (e) { /* 讀不到就用預設 */ }
-
-let bgmMissing = false; // 檔案還沒放進來：不要一直重試
-els.bgm.addEventListener('error', () => { bgmMissing = true; });
-function loadTrack() {
-  bgmMissing = false;
-  els.bgm.src = CONFIG.bgm[state.theme];
-  els.bgm.volume = 0;
-}
-
-let fadeTimer = 0;
-function fadeBgm(target, ms, done) {
-  clearInterval(fadeTimer);
-  if (!canSetVolume) { if (done) done(); return; }
-  const from = els.bgm.volume;
-  const start = performance.now();
-  fadeTimer = setInterval(() => {
-    const k = Math.min(1, (performance.now() - start) / ms);
-    els.bgm.volume = Math.max(0, Math.min(1, from + (target - from) * k));
-    if (k >= 1) {
-      clearInterval(fadeTimer);
-      if (done) done();
-    }
-  }, 30);
-}
-
-// 一打開網頁就播。瀏覽器若擋下有聲自動播放，就等第一次點擊 / 按鍵再播
-let audioUnlocked = false;
-let waitingGesture = false;
-function waitForGesture() {
-  if (waitingGesture) return;
-  waitingGesture = true;
-  const goPlay = () => {
-    waitingGesture = false;
-    ['pointerdown', 'keydown'].forEach((t) => document.removeEventListener(t, goPlay, true));
-    syncMusic();
-  };
-  ['pointerdown', 'keydown'].forEach((t) => document.addEventListener(t, goPlay, true));
-}
-
-function syncMusic() {
-  if (state.musicOn && !bgmMissing) {
-    if (els.bgm.paused) {
-      els.bgm.play().then(() => {
-        audioUnlocked = true;
-        fadeBgm(bgmVolume, CONFIG.bgmFadeInMs);
-      }).catch(() => {
-        if (bgmMissing) return;
-        if (!audioUnlocked) waitForGesture();
-        else if (els.bgm.paused) setMusicOn(false); // 播過之後又被擋：開關切成「關」，讓使用者點一下重試
-      });
-    } else {
-      fadeBgm(bgmVolume, CONFIG.bgmFadeInMs);
-    }
-  } else if (!els.bgm.paused) {
-    fadeBgm(0, CONFIG.bgmFadeOutMs, () => els.bgm.pause());
-  }
-}
-
-function switchTrack() {
-  const swap = () => { els.bgm.pause(); loadTrack(); syncMusic(); };
-  if (els.bgm.paused) swap();
-  else fadeBgm(0, CONFIG.bgmFadeOutMs, swap);
-}
-
-function setMusicOn(on) {
-  state.musicOn = on;
-  els.musicToggle.setAttribute('aria-pressed', String(on));
-  els.musicToggle.setAttribute('aria-label', `背景音樂：${on ? '開' : '關'}`);
-}
-els.musicToggle.addEventListener('click', () => {
-  setMusicOn(!state.musicOn);
-  if (state.musicOn && bgmMissing) loadTrack(); // 可能剛把檔案放進來，再試一次
-  syncMusic();
-});
-
-function setBgmVolume(v) {
-  bgmVolume = v;
-  els.volumeSlider.value = String(Math.round(v * 100));
-  els.volumeNum.textContent = String(Math.round(v * 100));
-  if (state.musicOn && !els.bgm.paused) { clearInterval(fadeTimer); els.bgm.volume = v; }
-}
-function openVolume(open) {
-  els.volumePop.hidden = !open;
-  els.volumeBtn.setAttribute('aria-expanded', String(open));
-}
-if (canSetVolume) {
-  setBgmVolume(bgmVolume);
-  els.volumeBtn.addEventListener('click', () => openVolume(els.volumePop.hidden));
-  els.volumeSlider.addEventListener('input', () => setBgmVolume(Number(els.volumeSlider.value) / 100));
-  els.volumeSlider.addEventListener('change', () => {
-    try { localStorage.setItem('bgmVolume', String(bgmVolume)); } catch (e) { /* 無痕模式等存不了就算了 */ }
-  });
-  document.addEventListener('pointerdown', (e) => {
-    if (!els.volumePop.hidden && !els.musicCtrl.contains(e.target)) openVolume(false);
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !els.volumePop.hidden) { openVolume(false); els.volumeBtn.focus(); }
-  });
-} else {
-  els.volumeBtn.hidden = true; // iOS 不能用程式調音量，只能用手機的音量鍵
 }
 
 /* ==========================================================
@@ -1024,5 +892,3 @@ resize();
 let resizeTimer = 0;
 window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(resize, 150); });
 requestAnimationFrame(frame);
-loadTrack();
-syncMusic();

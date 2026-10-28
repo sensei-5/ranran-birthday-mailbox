@@ -179,45 +179,8 @@ body::after {
 .theme-btn[aria-pressed="true"] { background: var(--ctrl-active); color: var(--ctrl-active-ink); }
 .theme-btn:active { transform: scale(0.96); }
 
-.music-ctrl { position: relative; display: flex; gap: 0.5em; }
-.volume-btn, .music-toggle {
-  height: 2.5em;
-  border: 0;
-  border-radius: 999px;
-  background: var(--ctrl-bg);
-  color: var(--ctrl-ink);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  cursor: pointer;
-  transition: transform 140ms var(--ease-out), background-color 240ms ease, color 240ms ease;
-}
-.volume-btn { display: inline-grid; place-items: center; width: 2.5em; padding: 0; }
-.volume-btn svg, .music-toggle svg { width: 1.3em; height: 1.3em; }
-.volume-btn .spk { fill: currentColor; }
-.volume-btn .wave { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
-.music-toggle { display: inline-flex; align-items: center; gap: 0.4em; padding: 0 0.95em 0 0.75em; }
-.music-toggle .note { fill: currentColor; }
-.music-toggle .slash { stroke: #e05a5a; stroke-width: 2.4; stroke-linecap: round; opacity: 0; transition: opacity 160ms ease; }
-.music-toggle[aria-pressed="false"] { opacity: 0.75; }
-.music-toggle[aria-pressed="false"] .slash { opacity: 1; }
-.volume-btn:active, .music-toggle:active { transform: scale(0.96); }
-.volume-pop {
-  position: absolute;
-  top: calc(100% + 0.5em);
-  right: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.6em;
-  padding: 0.6em 0.9em;
-  background: var(--ctrl-bg-hover);
-  color: var(--ctrl-ink);
-  border-radius: 999px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-}
-.volume-pop input { width: 9em; accent-color: var(--ctrl-active); cursor: pointer; }
-.volume-num { min-width: 2em; text-align: right; font-variant-numeric: tabular-nums; }
 @media (hover: hover) and (pointer: fine) {
   .theme-btn[aria-pressed="false"]:hover { background: var(--ctrl-bg-hover); }
-  .volume-btn:hover, .music-toggle:hover { background: var(--ctrl-bg-hover); }
 }
 
 /* ============ Stage ============ */
