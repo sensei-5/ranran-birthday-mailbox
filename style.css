@@ -127,13 +127,15 @@ button { font: inherit; color: inherit; }
 /* 冰雪風格右下角坐在雪地上的苒苒；只在冰雪姬出現 */
 .ice-mascot {
   position: absolute;
-  right: calc(3 * var(--u));
+  right: calc(9 * var(--u));
   bottom: calc(1.5 * var(--u));
   width: calc(17 * var(--u));
   opacity: 0;
   transform: translateY(12%);
-  transition: opacity var(--theme-ms) ease, transform var(--theme-ms) var(--ease-out);
+  transition: opacity var(--theme-ms) ease, transform var(--theme-ms) var(--ease-out), right 900ms var(--ease-in-out);
 }
+/* 打開信箱時退到右下角，讓出卡片的位置（信箱同時退到左下角） */
+body:has(.stage.is-open) .ice-mascot { right: calc(3 * var(--u)); }
 .ice-mascot::before { /* 雪地上的影子 */
   content: '';
   position: absolute;
@@ -150,15 +152,15 @@ button { font: inherit; color: inherit; }
   width: 100%;
   height: auto;
   transform-origin: 50% 95%;
-  animation: mascot-breathe 3.6s ease-in-out infinite;
+  animation: mascot-breathe 3.2s ease-in-out infinite;
 }
 [data-theme="ice"] .ice-mascot { opacity: 1; transform: none; }
 @keyframes mascot-breathe {
   0%, 100% { transform: scale(1, 1); }
-  50% { transform: scale(1.012, 0.985); }
+  50% { transform: scale(1.035, 0.955); }
 }
 @media (max-width: 640px) {
-  .ice-mascot { width: 30vw; right: 2vw; bottom: 1vw; }
+  .ice-mascot { width: 30vw; right: 6vw; bottom: 1vw; }
 }
 @media (prefers-reduced-motion: reduce) {
   .ice-mascot img { animation: none; }
