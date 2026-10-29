@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&display=swap">
-  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="style.css?v=10">
   <!-- 先套用上次選的風格，避免一打開先閃一下草木再淡到冰雪 -->
   <script>try { if (localStorage.getItem('theme') === 'ice') document.documentElement.dataset.theme = 'ice'; } catch (e) {}</script>
 </head>
@@ -18,6 +18,8 @@
     <canvas class="bg bg-meadow" id="bgMeadow"></canvas>
     <canvas class="bg bg-ice" id="bgIce"></canvas>
     <div class="sunrays"></div>
+    <!-- 冰雪風格右下角的苒苒（白貓） -->
+    <div class="ice-mascot"><img src="ranran.png" alt="" width="467" height="455" decoding="async"></div>
     <canvas class="particles" id="particles"></canvas>
   </div>
 

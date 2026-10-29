@@ -123,6 +123,46 @@ button { font: inherit; color: inherit; }
   transition: opacity var(--theme-ms) ease;
 }
 [data-theme="ice"] .sunrays { opacity: 0; }
+
+/* 冰雪風格右下角坐在雪地上的苒苒；只在冰雪姬出現 */
+.ice-mascot {
+  position: absolute;
+  right: calc(3 * var(--u));
+  bottom: calc(1.5 * var(--u));
+  width: calc(17 * var(--u));
+  opacity: 0;
+  transform: translateY(12%);
+  transition: opacity var(--theme-ms) ease, transform var(--theme-ms) var(--ease-out);
+}
+.ice-mascot::before { /* 雪地上的影子 */
+  content: '';
+  position: absolute;
+  left: 18%;
+  right: 12%;
+  bottom: 4%;
+  height: 9%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(40, 60, 110, 0.35), rgba(40, 60, 110, 0));
+}
+.ice-mascot img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  transform-origin: 50% 95%;
+  animation: mascot-breathe 3.6s ease-in-out infinite;
+}
+[data-theme="ice"] .ice-mascot { opacity: 1; transform: none; }
+@keyframes mascot-breathe {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(1.012, 0.985); }
+}
+@media (max-width: 640px) {
+  .ice-mascot { width: 30vw; right: 2vw; bottom: 1vw; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ice-mascot img { animation: none; }
+}
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* 整個畫面一層很淡的顆粒，讓顏色有紙 / 賽璐璐的質感 */
