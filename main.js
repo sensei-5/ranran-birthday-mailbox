@@ -327,10 +327,15 @@ function buildCard(i) {
     count.append('以上是 ', el('b', '', String(state.letters.length)), ' 位苒寶的祝福');
     const title = el('h2', 'end-title');
     fillEndTitle(title);
-    const back = el('button', 'end-back', '回到信箱');
+    const actions = el('div', 'end-actions');
+    const all = el('button', 'end-back', '看大家的祝福');
+    all.type = 'button';
+    all.addEventListener('click', () => Board.open());
+    const back = el('button', 'end-back ghost', '回到信箱');
     back.type = 'button';
     back.addEventListener('click', closeMailbox);
-    body.append(count, title, back);
+    actions.append(all, back);
+    body.append(count, title, actions);
   } else {
     const L = state.letters[i];
     const [l1, l2, l3] = state.labels;
@@ -462,7 +467,7 @@ function onRemove(btn) {
 }
 
 document.addEventListener('keydown', (e) => {
-  if (state.phase !== 'open' || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (state.phase !== 'open' || Board.isOpen() || e.altKey || e.ctrlKey || e.metaKey) return;
   if (e.target.closest && e.target.closest('input, textarea, select')) return;
   const onButton = e.target.closest && e.target.closest('button');
   if (e.key === 'ArrowRight' || e.key === 'PageDown' || (e.key === ' ' && !onButton)) { e.preventDefault(); go(1); }

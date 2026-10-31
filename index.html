@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&display=swap">
-  <link rel="stylesheet" href="style.css?v=11">
+  <link rel="stylesheet" href="style.css?v=12">
   <!-- 先套用上次選的風格，避免一打開先閃一下草木再淡到冰雪 -->
   <script>try { if (localStorage.getItem('theme') === 'ice') document.documentElement.dataset.theme = 'ice'; } catch (e) {}</script>
 </head>
@@ -107,9 +107,37 @@
     </section>
   </main>
 
+  <!-- 大家的祝福：所有人的祝福貼成一面牆（結尾卡片「看大家的祝福」） -->
+  <section class="board" id="board" aria-label="大家的祝福" hidden>
+    <header class="board-head">
+      <h2 class="board-title" id="boardTitle">大家的祝福</h2>
+      <p class="board-count" id="boardCount"></p>
+    </header>
+    <div class="board-wall" id="boardWall"></div>
+    <div class="board-actions">
+      <button class="board-btn" id="boardSave" type="button">保存成圖片</button>
+      <button class="board-btn ghost" id="boardBack" type="button">回到結尾</button>
+    </div>
+
+    <!-- 點開單張祝福 -->
+    <div class="note-zoom" id="noteZoom" role="dialog" aria-modal="true" aria-label="祝福" hidden>
+      <button class="zoom-nav" id="zoomPrev" type="button" aria-label="上一則"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="zoom-card" id="zoomCard">
+        <p class="zoom-name" id="zoomName"></p>
+        <p class="zoom-text" id="zoomText"></p>
+        <div class="zoom-foot">
+          <span class="zoom-pos" id="zoomPos"></span>
+          <button class="zoom-close" id="zoomClose" type="button">關閉</button>
+        </div>
+      </div>
+      <button class="zoom-nav" id="zoomNext" type="button" aria-label="下一則"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    </div>
+  </section>
+
   <div class="drop-hint" id="dropHint" hidden><p>放開，把問卷投進信箱</p></div>
 
   <script src="scenery.js?v=18"></script>
-  <script src="main.js?v=17"></script>
+  <script src="main.js?v=18"></script>
+  <script src="board.js?v=1"></script>
 </body>
 </html>
