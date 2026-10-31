@@ -850,7 +850,7 @@ body::after {
   cursor: pointer;
   transition: transform 140ms var(--ease-out), background-color var(--theme-ms) ease, opacity 200ms ease;
 }
-.board-btn.ghost { color: var(--ink); background: var(--ctrl-bg); }
+.board-btn.ghost { color: var(--ctrl-ink); background: var(--ctrl-bg); }
 .board-btn:active:not(:disabled) { transform: scale(0.97); }
 .board-btn:disabled { opacity: 0.6; cursor: wait; }
 @media (hover: hover) and (pointer: fine) {
